@@ -1,0 +1,687 @@
+#+TITLE: Jackson's Doom Emacs Config
+#+STARTUP: show1level
+
+* Preamble
+** Doom
+#+begin_src elisp
+;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
+
+;; Place your private configuration here! Remember, you do not need to run 'doom
+;; sync' after modifying this file!
+
+
+;; Some functionality uses this to identify you, e.g. GPG configuration, email
+;; clients, file templates and snippets.
+(setq user-full-name "Jacklyn Daumeyer"
+      user-mail-address "jacklynnnnnn@proton.me")
+
+;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
+;; are the three important ones:
+;;
+;; + `doom-font'
+;; + `doom-variable-pitch-font'
+;; + `doom-big-font' -- used for `doom-big-font-mode'; use this for
+;;   presentations or streaming.
+;;
+;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
+;; font string. You generally only need these two:
+(setq doom-font (font-spec :family "Fantasque Sans Mono" :size 12)
+      doom-variable-pitch-font (font-spec :family "Karla" :size 14)
+      doom-serif-font (font-spec :family "Roboto Slab"))
+
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+;; There are two ways to load a theme. Both assume the theme is installed and
+;; available. You can either set `doom-theme' or manually load a theme with the
+;; `load-theme' function. This is the default:
+(setq doom-theme 'apollo)
+
+;; If you use `org' and don't want your org files in the default location below,
+;; change `org-directory'. It must be set before org loads!
+(setq org-directory "~/doc/org/")
+
+;; This determines the style of line numbers in effect. If set to `nil', line
+;; numbers are disabled. For relative line numbers, set this to `relative'.
+(setq display-line-numbers-type nil)
+
+
+;; Here are some additional functions/macros that could help you configure Doom:
+;;
+;; - `load!' for loading external *.el files relative to this one
+;; - `use-package' for configuring packages
+;; - `after!' for running code after a package has loaded
+;; - `add-load-path!' for adding directories to the `load-path', relative to
+;;   this file. Emacs searches the `load-path' when you load packages with
+;;   `require' or `use-package'.
+;; - `map!' for binding new keys
+;;
+;; To get information about any of these functions/macros, move the cursor over
+;; the highlighted symbol at press 'K' (non-evil users must press 'C-c g k').
+;; This will open documentation for it, including demos of how they are used.
+;;
+;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
+;; they are implemented.
+
+#+END_SRC
+** Better Visual Navigation
+#+begin_src elisp
+(map!
+        :nv "k" #'evil-previous-visual-line
+        :nv "j" #'evil-next-visual-line
+        )
+
+#+end_src
+
+* Tools
+** pdf-mode
+I'm used to using [key: Shift+J] and ~Shift+K~ to move the next and previous page respectively so I added them to the pdf mode map.
+#+begin_src elisp
+(map! :after pdf-view-mode
+      :map pdf-view-mode
+      :nv "J" #'pdf-view-next-page
+      :nv "K" #'pdf-view-previous-page)
+
+#+end_src
+* Projectile
+Set up project directories.
+#+begin_src elisp
+(setq projectile-project-search-path '("~/doc/projects/" "~/doc/org/")
+      projectile-globally-ignored-file-suffixes '(".pdf" ".odt" ".class" ".vs" ".s" ".o"))
+#+end_src
+
+Have projectile open a dired buffer on choosing a project
+#+begin_src elisp
+(setq projectile-switch-project-action #'projectile-dired)
+(setq counsel-projectile-switch-project-action #'counsel-projectile-switch-project-action-dired)
+#+end_src
+
+* School
+These are just some changes to emacs in order to use it with my schoolwork.
+#+begin_src elisp
+
+(setq-default lsp-java-workspace-dir "/home/jed/doc/osu/cse2221/workspace")
+(setq lsp-java-java-path "/lib/jvm/java-11-openjdk/bin/java")
+
+(setq org-babel-default-header-args:java
+       '((:cmdline . "-cp .:/home/jed/doc/osu/components.jar")
+         (:imports . "components.simplewriter.SimpleWriter1L components.simplewriter.SimpleWriter components.simplereader.SimpleReader components.simplereader.SimpleReader1L")))
+#+end_src
+
+
+
+Setup a latex class for my d&d sessions
+#+begin_src elisp
+
+(setq TeX-engine 'luatex)
+(with-eval-after-load 'ox-latex
+    (add-to-list 'org-latex-classes
+                '("dndnotes"
+                  "\\documentclass{dndnotes}"
+                  ("\\section{%s}" . "\\section*{%s}")
+                  ("\\subsection{%s}" . "\\subsection*{%s}")
+                  ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+    ;; American Psychological Association papers
+    (add-to-list 'org-latex-classes
+                 '("apa7"
+                "\\documentclass[stu, 11pt]{apa7}
+                 \\usepackage[nodoi]{apacite}"
+                ("\\section{%s}" . "\\section*{%s}")
+                ("\\subsection{%s}" . "\\subsection*{%s}")))
+    (add-to-list 'org-latex-classes
+                '("comm3165"
+                  "\\documentclass{comm3165}"
+                  ("\\section{%s}" . "\\section*{%s}")
+                  ("\\subsection{%s}" . "\\subsection*{%s}")
+                  ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+
+)
+#+end_src
+
+* Languages
+** Org
+
+#+begin_src elisp
+(setq plantuml-default-exec-mode 'executable)
+#+end_src
+
+#+begin_src elisp
+(after! org
+#+end_src
+*** Babel Lobs
+This contains some utilities that I use when writing my notes for school.
+#+begin_src elisp
+        (org-babel-lob-ingest "/home/jed/.doom.d/babel/notes.org")
+#+end_src
+
+#+RESULTS:
+: 10
+
+General Utilities for running games of D&D.
+#+begin_src elisp
+        (org-babel-lob-ingest "/home/jed/.doom.d/babel/dnd.org")
+#+end_src
+
+*** Capture
+Org-capture is a powerful tool for adding anything in your head to org.
+#+begin_src elisp
+    (setq org-capture-templates
+      '(("i" "Inbox" entry (file "~/doc/org/inbox.org" )
+         "* TODO %? \n:PROPERTIES:\n:CREATED: %U\n:END:\n%i\n"
+         :kill-buffer t)
+        ("n" "Notes" entry (file "~/doc/org/notes.org")
+         "* %?\n#+DATE: %U")))
+#+end_src
+
+*** Notes
+I try to publish all the notes that I take for my courses and publish them to my github. They chan be viewed at [[jdaumeyer.github.com/notes/]].
+
+**** MATH3345 Fundementals of Higher Math
+#+begin_src elisp
+(setq org-publish-project-alist
+          '(
+            ;;
+            ;; MATH3345 Fundementals of Higher Math
+            ;;
+            ("math3345-notes"
+             :base-directory "~/doc/osu/math3345/notes/"
+             :base-extension "org"
+             :publishing-directory "~/doc/osu/publicnotes/math3345/"
+             :index-fn "directory.org"
+             :recursive t
+             :publishing-function org-html-publish-to-html
+             :headline-levels 5
+             :auto-preamble t)
+            ("math3345-static"
+             :base-directory "~/doc/osu/math3345/notes/"
+             :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+             :publishing-directory "~/doc/osu/publicnotes/math3345/"
+             :recursive t
+             :publishing-function org-publish-attachment)
+            ("math3345" :components ("math3345-notes" "math3345-static"))
+#+end_src
+
+**** CSE3231 Software Engineering Techniques
+#+begin_src elisp
+            ;;
+            ;; CSE3231 Software Engineering Techniques
+            ;;
+            ("cse3231-notes"
+             :base-directory "~/doc/osu/cse3231/notes/"
+             :base-extension "org"
+             :publishing-directory "~/doc/osu/publicnotes/cse3231/"
+             :index-fn "index.org"
+             :recursive t
+             :publishing-function org-html-publish-to-html
+             :headline-levels 5
+             :auto-preamble t)
+            ("cse3231-static"
+             :base-directory "~/doc/osu/cse3231/notes/"
+             :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+             :publishing-directory "~/doc/osu/publicnotes/cse3231/"
+             :recursive t
+             :publishing-function org-publish-attachment)
+            ("cse3231" :components ("cse3231-notes" "cse3231-static"))
+#+end_src
+
+**** ECE 2060 Intro to Digital Logic
+#+begin_src elisp
+            ;;
+            ;; ECE 2060 Intro to Digital Logic            ;;
+            ;;
+            ("ece2060-notes"
+             :base-directory "~/doc/osu/ece2060/notes/"
+             :base-extension "org"
+             :publishing-directory "~/doc/osu/publicnotes/ece2060/"
+             :index-fn "directory.org"
+             :recursive t
+             :publishing-function org-html-publish-to-html
+             :headline-levels 5
+             :auto-preamble t)
+            ("ece2060-static"
+             :base-directory "~/doc/osu/ece2060/notes/"
+             :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+             :publishing-directory "~/doc/osu/publicnotes/ece2060/"
+             :recursive t
+             :publishing-function org-publish-attachment)
+            ("ece2060" :components ("ece2060-notes" "ece2060-static"))
+#+end_src
+
+**** CSE 2431 Systems 2
+#+begin_src elisp
+            ;;
+            ;; CSE 2431 Systems 2
+            ;;
+            ("cse2431-notes"
+             :base-directory "~/doc/osu/cse2431/notes/"
+             :base-extension "org"
+             :publishing-directory "~/doc/osu/publicnotes/cse2431/"
+             :index-fn "directory.org"
+             :recursive t
+             :publishing-function org-html-publish-to-html
+             :headline-levels 5
+             :auto-preamble t)
+            ("cse2431-static"
+             :base-directory "~/doc/osu/cse2431/notes/"
+             :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+             :publishing-directory "~/doc/osu/publicnotes/cse2431/"
+             :recursive t
+             :publishing-function org-publish-attachment)
+            ("cse2431" :components ("cse2431-notes" "cse2431-static"))
+#+end_src
+
+**** COMM 2367 Persuasive Communication
+#+begin_src elisp
+            ;;
+            ;; COMM 2367 Persuasive Communication
+            ;;
+            ("comm2367-notes"
+             :base-directory "~/doc/osu/comm2367/notes/"
+             :base-extension "org"
+             :publishing-directory "~/doc/osu/publicnotes/comm2367/"
+             :index-fn "directory.org"
+             :recursive t
+             :publishing-function org-html-publish-to-html
+             :headline-levels 5
+             :auto-preamble t)
+            ("comm2367-static"
+             :base-directory "~/doc/osu/comm2367/notes/"
+             :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+             :publishing-directory "~/doc/osu/publicnotes/comm2367/"
+             :recursive t
+             :publishing-function org-publish-attachment)
+            ("comm2367" :components ("comm2367-notes" "comm2367-static"))
+#+end_src
+
+**** MATH 1152 Calculus 2 :past:
+#+begin_src elisp
+            ;;
+            ;; MATH 1152 Calculus II
+            ;;
+            ("math1152-notes"
+             :base-directory "~/doc/osu/math1152/notes/"
+             :base-extension "org"
+             :publishing-directory "~/doc/osu/publicnotes/math1152/"
+             :index-fn "directory.org"
+             :recursive t
+             :publishing-function org-html-publish-to-html
+             :headline-levels 5
+             :auto-preamble t)
+            ("math1152-static"
+             :base-directory "~/doc/osu/math1152/notes/"
+             :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+             :publishing-directory "~/doc/osu/publicnotes/math1152/"
+             :recursive t
+             :publishing-function org-publish-attachment)
+            ("math1152" :components ("math1152-notes" "math1152-static"))
+#+end_src
+
+**** CSE2421 Systems 1 :past:
+#+begin_src elisp
+            ;;
+            ;; CSE 2321 Discrete Structures
+            ;;
+            ("cse2421-notes"
+             :base-directory "~/doc/osu/cse2421/notes/"
+             :base-extension "org"
+             :publishing-directory "~/doc/osu/publicnotes/cse2421/"
+             :index-fn "index.org"
+             :recursive t
+             :publishing-function org-html-publish-to-html
+             :headline-levels 5
+             :auto-preamble t)
+            ("cse2421-static"
+             :base-directory "~/doc/osu/cse2421/notes/"
+             :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+             :publishing-directory "~/doc/osu/publicnotes/cse2421/"
+             :recursive t
+             :publishing-function org-publish-attachment)
+            ("cse2421" :components ("cse2421-notes" "cse2421-static"))
+
+#+end_src
+
+**** CSE 2321 Foundations 1 :past:
+#+begin_src elisp
+            ;;
+            ;; CSE 2321 Discrete Structures
+            ;;
+            ("cse2321-notes"
+             :base-directory "~/doc/osu/past/cse2321/notes/"
+             :base-extension "org"
+             :publishing-directory "~/doc/osu/publicnotes/cse2321/"
+             :index-fn "directory.org"
+             :recursive t
+             :publishing-function org-html-publish-to-html
+             :headline-levels 5
+             :auto-preamble t)
+            ("cse2321-static"
+             :base-directory "~/doc/osu/past/cse2321/notes/"
+             :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+             :publishing-directory "~/doc/osu/publicnotes/cse2321/"
+             :recursive t
+             :publishing-function org-publish-attachment)
+            ("cse2321" :components ("cse2321-notes" "cse2321-static"))
+
+#+end_src
+
+**** CSE 2331 Foundations 2
+#+begin_src elisp
+            ;;
+            ;; CSE 2331 Data Structures & Algorithms
+            ;;
+            ("cse2331-notes"
+             :base-directory "~/doc/osu/cse2331/notes/"
+             :base-extension "org"
+             :publishing-directory "~/doc/osu/publicnotes/cse2331/"
+             :index-fn "directory.org"
+             :recursive t
+             :publishing-function org-html-publish-to-html
+             :headline-levels 5
+             :auto-preamble t)
+            ("cse2331-static"
+             :base-directory "~/doc/osu/cse2331/notes/"
+             :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+             :publishing-directory "~/doc/osu/publicnotes/cse2331/"
+             :recursive t
+             :publishing-function org-publish-attachment)
+            ("cse2331" :components ("cse2331-notes" "cse2331-static"))
+
+#+end_src
+
+**** CSE 2231 Software 2 :past:
+#+begin_src elisp
+            ;;
+            ;; CSE 2231 Software Development and Design
+            ;;
+            ("cse2231-notes"
+             :base-directory "~/doc/osu/cse2231/notes/"
+             :base-extension "org"
+             :publishing-directory "~/doc/osu/publicnotes/cse2231/"
+             :index-fn "directory.org"
+             :recursive t
+             :publishing-function org-html-publish-to-html
+             :headline-levels 5
+             :auto-preamble t)
+            ("cse2231-static"
+             :base-directory "~/doc/osu/cse2231/notes/"
+             :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+             :publishing-directory "~/doc/osu/publicnotes/cse2231/"
+             :recursive t
+             :publishing-function org-publish-attachment)
+            ("cse2231" :components ("cse2231-notes" "cse2231-static"))
+#+end_src
+**** CSE 2221 Software 1 :past:
+#+begin_src elisp
+            ;;
+            ;; CSE 2221 Software Components
+            ;;
+            ("cse2221-notes"
+             :base-directory "~/doc/osu/past/cse2221/notes/"
+             :base-extension "org"
+             :publishing-directory "~/doc/osu/publicnotes/cse2221/"
+             :index-fn "directory.org"
+             :recursive t
+             :publishing-function org-html-publish-to-html
+             :headline-levels 5
+             :auto-preamble t)
+            ("cse2221-static"
+             :base-directory "~/doc/osu/past/cse2221/notes/"
+             :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+             :publishing-directory "~/doc/osu/publicnotes/cse2221/"
+             :recursive t
+             :publishing-function org-publish-attachment)
+            ("cse2221" :components ("cse2221-notes" "cse2221-static"))
+#+end_src
+
+**** MATH 1151 Calculus 1 :past:
+#+begin_src elisp
+            ;;
+            ;; Math 1151
+            ;;
+            ("math1151-notes"
+             :base-directory "~/doc/osu/past/math1151/notes/"
+             :base-extension "org"
+             :publishing-directory "~/doc/osu/publicnotes/math1151/"
+             :index-fn "directory.org"
+             :recursive t
+             :publishing-function org-html-publish-to-html
+             :headline-levels 5
+             :auto-preamble t)
+            ("math1151-static"
+             :base-directory "~/doc/osu/past/math1151/notes/"
+             :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+             :publishing-directory "~/doc/osu/publicnotes/math1151/"
+             :recursive t
+             :publishing-function org-publish-attachment)
+            ("math1151" :components ("math1151-notes" "math1151-static"))
+#+end_src
+
+**** COMM3165 Methods :past:
+#+begin_src elisp
+            ;;
+            ;; COMM3165
+            ;;
+            ("comm3165-notes"
+             :base-directory "~/doc/osu/comm3165/notes/"
+             :base-extension "org"
+             :publishing-directory "~/doc/osu/publicnotes/comm3165/"
+             :index-fn "directory.org"
+             :recursive t
+             :publishing-function org-html-publish-to-html
+             :headline-levels 5
+             :auto-preamble t)
+            ("comm3165-static"
+             :base-directory "~/doc/osu/comm3165/notes/"
+             :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+             :publishing-directory "~/doc/osu/publicnotes/comm3165/"
+             :recursive t
+             :publishing-function org-publish-attachment)
+            ("comm3165" :components ("comm3165-notes" "comm3165-static"))
+#+end_src
+
+**** COMM3545 HCI + UX
+#+begin_src elisp
+            ;;
+            ;; COMM3545
+            ;;
+            ("comm3545-notes"
+             :base-directory "~/doc/osu/comm3545/notes/"
+             :base-extension "org"
+             :publishing-directory "~/doc/osu/publicnotes/comm3545/"
+             :index-fn "index.org"
+             :recursive t
+             :publishing-function org-html-publish-to-html
+             :headline-levels 5
+             :auto-preamble t)
+            ("comm3545-static"
+             :base-directory "~/doc/osu/comm3545/notes/"
+             :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+             :publishing-directory "~/doc/osu/publicnotes/comm3545/"
+             :recursive t
+             :publishing-function org-publish-attachment)
+            ("comm3545" :components ("comm3545-notes" "comm3545-static"))
+#+end_src
+
+
+
+
+**** PHYSICS 1250 :past:
+#+begin_src elisp
+            ;;
+            ;; PHYSICS 1250
+            ;;
+            ("physics1250-notes"
+             :base-directory "~/doc/osu/past/physics1250/notes/"
+             :base-extension "org"
+             :publishing-directory "~/doc/osu/publicnotes/physics1250/"
+             :index-fn "directory.org"
+             :recursive t
+             :publishing-function org-html-publish-to-html
+             :headline-levels 5
+             :auto-preamble t)
+            ("physics1250-static"
+             :base-directory "~/doc/osu/past/physics1250/notes/"
+             :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+             :publishing-directory "~/doc/osu/publicnotes/physics1250/"
+             :recursive t
+             :publishing-function org-publish-attachment)
+            ("physics1250" :components ("physics1250-notes" "physics1250-static"))
+
+          ))
+#+end_src
+
+*** Appearance
+**** Bullets
+#+begin_src elisp
+    (setq org-superstar-headline-bullets-list '("✱" "◉" "●" "○"  "◈" "◇" "➢"  "▣" "□")
+          org-ellipsis " ... "
+          display-line-numbers-type nil) ;; folding symbol
+#+end_src
+
+**** Custom Faces
+#+begin_src elisp
+
+    ;; Header Faces
+    (set-face-attribute 'org-document-title nil  :weight 'extra-bold)
+    (set-face-attribute 'org-level-1        nil  :weight 'extra-bold)
+    (set-face-attribute 'org-level-2        nil  :weight 'extra-bold)
+    (set-face-attribute 'org-level-3        nil  :weight 'extra-bold)
+    (set-face-attribute 'org-level-4        nil  :weight 'extra-bold)
+    (set-face-attribute 'org-level-5        nil  :weight 'extra-bold)
+    (set-face-attribute 'org-level-6        nil  :weight 'extra-bold)
+    (set-face-attribute 'org-level-7        nil  :weight 'extra-bold)
+    (set-face-attribute 'org-level-8        nil  :weight 'extra-bold)
+    (set-face-attribute 'org-tag            nil :family "Fantasque Sans Mono" :height 1.0)
+    ;; Agenda Faces
+    (set-face-attribute 'org-agenda-date                  nil :family "Fantasque Sans Mono" :height 1.6)
+    (set-face-attribute 'org-agenda-date-today            nil :family "Fantasque Sans Mono" :height 1.6)
+    (set-face-attribute 'org-agenda-date-weekend          nil :family "Fantasque Sans Mono" :height 1.6)
+    ;;(set-face-attribute 'org-agenda-date-later            nil :family "Roboto Slab" :height 1.5)
+    ;;(set-face-attribute 'org-agenda-date-earlier          nil :family "Roboto Slab" :height 1.5)
+    (set-face-attribute 'org-agenda-structure             nil :family "Roboto Slab" :height 2.0)
+    ;;(set-face-attribute 'org-agenda-deadline-face         nil :foreground "red")
+    (setq org-todo-keywords '((sequence "TODO(t)" "PROG(p)" "WAIT(w)" "|" "DONE(d)")))
+  ;; ☑□⌚e
+        ;; show actually italicized text instead of /italicized text/
+  ;; Make lists look a bit cooler
+  ;;(font-lock-add-keywords 'org-mode
+  ;;                      '(("^+\\([-*]\\) "
+  ;;                        (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "➥"))))))
+;; ➥ →
+    )
+#+end_src
+
+**** Variable Pitch
+Variable Pitch allows for the use of a non monospace fonts, making it feel more like a document.
+#+begin_src elisp
+(add-hook! org-mode :append
+           #'variable-pitch-mode)
+#+end_src
+
+*** Agenda
+#+begin_src elisp
+(setq org-agenda-block-separator (string-to-char " "))
+(setq org-agenda-format-date 'my-org-agenda-format-date-aligned)
+#+end_src
+
+**** Date Helper Function
+#+begin_src elisp
+(defun my-org-agenda-format-date-aligned (date)
+  "Format a DATE string for display in the daily/weekly agenda, or timeline.
+This function makes sure that dates are aligned for easy reading."
+  (require 'cal-iso)
+  (let* ((dayname (calendar-day-name date 1 nil))
+         (day (cadr date))
+         (day-of-week (calendar-day-of-week date))
+         (month (car date))
+         (monthname (calendar-month-name month 1))
+         (year (nth 2 date))
+         (iso-week (org-days-to-iso-week
+                    (calendar-absolute-from-gregorian date)))
+         (weekyear (cond ((and (= month 1) (>= iso-week 52))
+                          (1- year))
+                         ((and (= month 12) (<= iso-week 1))
+                          (1+ year))
+                         (t year)))
+         (weekstring (if (= day-of-week 1)
+                         (format " W%02d" iso-week)
+                       "")))
+         (format " %s %s/%2d  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+            dayname month day)))
+#+end_src
+
+**** Custom Agenda
+#+begin_src elisp
+(setq org-agenda-custom-commands
+      '(("x" "My Agenda"
+          ((agenda "" (;;(org-agenda-skip-scheduled-if-done f)
+                      (org-agenda-skip-timestamp-if-done t)
+                      (org-agenda-skip-deadline-if-done t)
+                      (org-agenda-start-day "+0d")
+                      (org-agenda-span 7)
+                      (org-agenda-include-diary t)
+                      (org-agenda-overriding-header "\n✱ SCHEDULE:\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+
+                      ;;(org-agenda-repeating-timestamp-show-all nil)
+                      (org-agenda-prefix-format "     %t ")
+                       ;;(concat "  %-3i  %-15b %t%s" org-agenda-hidden-separator))
+                      ;;(org-agenda-todo-keyword-format " ☐ ")
+                      (org-agenda-time)
+                      (org-agenda-current-time-string "⯇━━━━━━━━━ NOW")
+                      ;;(org-agenda-scheduled-leaders '("" ""))
+                      ;;(org-agenda-deadline-leaders '("" ""))
+                      (org-agenda-time-grid (quote ((today require-timed remove-match) (0800 2100) "      " "━━━━━━━━━━━━━━━")))
+                      ))
+
+          (alltodo "" ;; List of all other tasks
+                ((org-agenda-overriding-header "✱ TASKS:\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+                (org-agenda-remove-tags t)
+                (org-agenda-skip-deadline t)
+                (org-agenda-prefix-format "   %t ")
+                ;;(org-agenda-todo-keyword-format "")
+                (org-agenda-dim-blocked-tasks 'invisible)
+                (org-agenda-skip-function '(org-agenda-skip-entry-if 'scheduled))) ;; Ignore any scheduled tasks
+        )))))
+#+end_src
+
+**** Org ICal Fix
+This fixes events from duplicating themselves upon reimporting a ~.ics~ file.
+#+begin_src elisp
+(setq org-icalendar-store-UID t)
+#+end_src
+
+Enable property inheritance for timezones. So I can set a header to the proper timezone and forget it.
+#+begin_src elisp
+(setq org-use-property-inheritance t)
+#+end_src
+
+** C
+*** Debugger
+I'm currently using ~gdb~ as my debugger, since it's the one recommended for my C class. Doom-emacs has support for debugging but doesn't currently have any mappings for them so here are mine.
+#+begin_src elisp
+;;(map! :map gdb-mi
+;;      :leader
+;;      :prefix ("d". "debug")
+;;
+;;      :desc "gdb step"  "s" #'
+;;
+;;                )
+#+end_src
+
+** LaTeX
+#+begin_src elisp
+(setq +latex-viewers '(pdf-tools))
+#+end_src
+** Quandary
+#+begin_src elisp
+;;(add-to-list 'org-babel-load-languages '(quandary . t))
+#+end_src
+
+* Emacs Server
+#+begin_src elisp
+(setq window-divider-default-bottom-width 2  ; default is 1
+      window-divider-default-right-width  2)  ; default is 1
+#+end_src
+Start the emacs server. I mainly just use this to open files from other sources in emacs.
+#+begin_src elisp
+(server-start)
+#+end_src

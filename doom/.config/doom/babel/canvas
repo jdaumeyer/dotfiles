@@ -1,0 +1,142 @@
+x=10
+name="comm2367"
+"""
+Python REST Api Interaction Modulues
+"""
+import requests
+import json
+import datetime
+from dateutil import parser
+from dateutil import tz
+import pytz
+
+def fetch_course_calendar(token, course_id, start_date, end_date):
+    request_url = "https://canvas.instructure.com/api/v1/calendar_events"
+    data = {'start_date' : start_date, 'end_date' : end_date, 'context_codes[]' : course_id, 'type' : "assignment"}
+    header = {'Authorization' : token}
+    #print(json.dumps(data))
+    response = requests.get(request_url, params=data, headers=header)
+
+    #print(response.url)
+
+    return response.json()
+
+def get_course_info(course_name):
+    course_list = {
+        # test courses
+        "comm1100" : {"course_id" : "course_85970000000122736", "start_date" : "2022-08-23", "end_date" : "2022-12-16"},
+
+        # spring 2023
+        "cse2431"  : {"course_id" : "course_85970000000136959", "start_date" : "2023-01-09", "end_date" : "2023-04-04"},
+        "comm2367" : {"course_id" : "course_85970000000133176", "start_date" : "2023-01-09", "end_date" : "2023-04-04"},
+        "ece2060"  : {"course_id" : "course_?????????????????", "start_date" : "2023-01-09", "end_date" : "2023-04-04"},
+        "comm2540" : {"course_id" : "course_?????????????????", "start_date" : "2023-01-09", "end_date" : "2023-04-04"},
+        "comm3554" : {"course_id" : "course_?????????????????", "start_date" : "2023-01-09", "end_date" : "2023-04-04"}
+
+        # fall 2023
+    }
+
+    return course_list[course_name]
+def get_next_assignments(course_name, amount_of_events):
+    oauth_token = "Bearer 8597~cRLhMLO1IkVu3rJBRMjE86sqAH55CEhxRtnTGiJLFGFhwZ07IQujCqWUXEbHFg1I"
+
+    course_info = get_course_info(course_name)
+    current_time = datetime.datetime.now()
+    date_string = str(current_time.year) + "-" + str(current_time.month) + "-" + str(current_time.day)
+    print(current_time)
+    # Start date here should be today's date
+    response = fetch_course_calendar(oauth_token, course_info["course_id"], date_string, course_info["end_date"])
+    # print(response) Careful! This can be too big for emacs to print
+
+    keep = dict()
+    for count, assignment in enumerate(response):
+        # Look at user_submitted to see if an assignment is complete
+        if count > amount_of_events:
+            break
+        #print(assignment['title'])
+        keep[count] = assignment
+        #print(assignment['description'])
+
+    #print(keep)
+    return keep
+
+def orgify_description(description):
+    new_description = description
+
+    replacement_map = {
+        # Bold
+        "<strong>" : "*",
+        "</strong>" : "*",
+
+        # Italics
+        "<em>" : "/",
+        "</em>" : "/",
+
+        # Headers
+        "<h1>" : "",
+        "<h2>" : "",
+        "<h3>" : "",
+        "<h4>" : "",
+        "<h5>" : "",
+        "<h6>" : "",
+
+        # Misc / Stuff I want to ignore
+        "&nbsp;" : " ",
+        "&amp;"  : "&",
+        "<span>" : "",
+        "<p>" : "",
+        "</span>" : "",
+        "</p>" : "",
+        "\n" : ""
+        # Probably need a regex for div tags if those are still an issue
+
+
+        }
+    for pair in replacement_map:
+        #print(pair + ", " + replacement_map[pair])
+        new_description = new_description.replace(pair, replacement_map[pair])
+
+    return new_description[:50]
+
+def orgify_timestamp(timestamp):
+
+    # Timezones
+    from_zone = tz.gettz("UTC")
+    to_zone = tz.gettz("EST")
+
+    # Localize the incoming timestamp
+    time = parser.parse(timestamp)
+    utc = time.replace(tzinfo=from_zone)
+    est = utc.astimezone(to_zone)
+
+    # Generate an org-compatable string
+    org_timestamp = est.strftime("<%Y-%m-%d %a %H:%M>")
+
+    return org_timestamp
+def orgify_status(status):
+    if status:
+        return "✅"
+    else:
+        return "❌"
+def orgify_title(assignment):
+    # Org mode is intercepting this but the below string is [ [%s] [%s]]
+    return "[[%s][%s]]" % (assignment["html_url"], assignment["title"])
+def generate_upcomming_assignments_table(course_name, num):
+    assignment_list = get_next_assignments(course_name, num)
+    print("| Assignment Name | Status | Due Date | Description |")
+    print("|-----------------+--------+----------+-------------|")
+    #print(assignment_list)
+
+    #if (len(assignment_list) < 1):
+    #    print("| %s | | | |" % "All done! Congrats!!!")
+    #    return
+
+    for i, j in enumerate(assignment_list):
+        assignment = assignment_list[i]
+        print("| %s |"  % orgify_title(assignment),end="")
+        print(" %s |"   % orgify_status(assignment["assignment"]["user_submitted"]),end="")
+        print(" %s |"   % orgify_timestamp(assignment["start_at"]),end="")
+        print(" %s |"   % orgify_description(assignment["description"]),end="\n")
+
+if __name__ == "__main__":
+    generate_upcomming_assignments_table(name, x)

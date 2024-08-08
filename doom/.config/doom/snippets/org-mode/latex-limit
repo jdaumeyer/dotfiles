@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: LaTeX Limit
+# key: \ll
+# --
+$\lim\limits_{$1 \to $2} $0$

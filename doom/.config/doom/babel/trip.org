@@ -1,0 +1,32 @@
+#+title: Trip
+
+
+* Location Information
+#+name: overpass_imports
+#+begin_src python
+import overpass
+#+end_src
+
+#+begin_src python
+def get_location_by_name(name):
+    response = overpass_api.get('way["name"=\"' + name + '\"')
+    return response[0]
+#+end_src
+
+#+begin_src python :results output table drawer replace :exports results
+import overpass
+import json
+overpass_api = overpass.API()
+
+response = overpass_api.get('relation["name"~"Hofgarten"]; way["name"~"Hofgarten"]; node["name"~"Hofgarten"]')
+print(response)
+# print("| Phone |", end="")
+# print(response[0]["properties"]["phone"], end=" |\n")
+# print(" | Website | ", end="")
+# print(response[0]["properties"]["website"], end=" |\n")
+#+end_src
+
+#+RESULTS:
+:results:
+| features | : | nil | type | : | FeatureCollection |
+:end:

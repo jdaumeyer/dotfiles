@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Java Inline Src
+# key: jc
+# --
+src_java[:exports code]{$0}

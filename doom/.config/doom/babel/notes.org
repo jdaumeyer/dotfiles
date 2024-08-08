@@ -1,0 +1,318 @@
+#+TITLE: Notes
+
+#+begin_src elisp :noweb true :results none
+        (org-babel-lob-ingest "/home/jed/.doom.d/babel/notes.org")
+#+end_src
+
+
+* Note Links
+#+name: generate-links
+#+begin_src bash :results output raw
+for FILE in `ls -tUr *.org`
+do
+    if [ $FILE != "index.org" ]
+    then
+              FILENAME=${FILE%%.*}
+              FILENAME=${FILENAME^}
+              FILENAME=${FILENAME//-/ }
+              echo "* [[file:$FILE][$FILENAME]]"
+    fi
+done
+#+end_src
+
+* Canvas LMS Integrations
+** Setup
+8597~cRLhMLO1IkVu3rJBRMjE86sqAH55CEhxRtnTGiJLFGFhwZ07IQujCqWUXEbHFg1I
+
+curl -H "Authorization: Bearer 8597~cRLhMLO1IkVu3rJBRMjE86sqAH55CEhxRtnTGiJLFGFhwZ07IQujCqWUXEbHFg1I" "https://canvas.instructure.com/api/v1/courses"
+
+#+name: python_rest_imports
+#+begin_src python
+"""
+Python REST Api Interaction Modulues
+"""
+import requests
+import json
+import datetime
+from dateutil import parser
+from dateutil import tz
+import pytz
+
+#+end_src
+
+#+begin_src bash
+curl -H "Authorization: Bearer 8597~cRLhMLO1IkVu3rJBRMjE86sqAH55CEhxRtnTGiJLFGFhwZ07IQujCqWUXEbHFg1I" "https://canvas.instructure.com/api/v1/calendar_events?start_date=2022-12-13&end_date=2022-12-14&context_codes[]=user_85970000000547356&context_codes[]=course_85970000000122736" > api-out.json
+#+end_src
+
+** Upcoming Assignments
+*** Fetch Course Calendar
+This should grab and return the json info for a given course id. A course id is the couse_id, the id can be found from api/v1/courses
+ + Should only need to check for type=assignment as I'll cover events on my own
+ + couse_id :: The course id
+ + start_date :: the date the begin the search from in ~YYYY-MM-DD~ format
+ + end_date :: the date to end searching, if the same as ~start_date~ it will look at just that day
+
+#+name: fetch_course_calendar
+#+begin_src python
+def fetch_course_calendar(token, course_id, start_date, end_date):
+    request_url = "https://canvas.instructure.com/api/v1/calendar_events"
+    data = {'start_date' : start_date, 'end_date' : end_date, 'context_codes[]' : course_id, 'type' : "assignment"}
+    header = {'Authorization' : token}
+    #print(json.dumps(data))
+    response = requests.get(request_url, params=data, headers=header)
+
+    #print(response.url)
+
+    return response.json()
+
+#+end_src
+
+*** Return the next X assignments
+Returns the json for the next x assignments
+#+name: get_next_assignments
+#+begin_src python
+def get_next_assignments(course_name, amount_of_events):
+    oauth_token = "Bearer 8597~cRLhMLO1IkVu3rJBRMjE86sqAH55CEhxRtnTGiJLFGFhwZ07IQujCqWUXEbHFg1I"
+
+    course_info = get_course_info(course_name)
+    current_time = datetime.datetime.now()
+    date_string = current_time.isoformat()
+    print(current_time)
+    # Start date here should be today's date
+    response = fetch_course_calendar(oauth_token, course_info["course_id"], date_string, course_info["end_date"])
+    # print(response) Careful! This can be too big for emacs to print
+
+    keep = dict()
+    for count, assignment in enumerate(response):
+        # Look at user_submitted to see if an assignment is complete
+        if count > amount_of_events:
+            break
+        #print(assignment['title'])
+        keep[count] = assignment
+        #print(assignment['description'])
+
+    #print(keep)
+    return keep
+
+#+end_src
+
+*** Get course information
+From the string name of a course (i.e "math1152"), I want to get the ~course_id~, ~start_date~ and ~end_date~.
+
+This function basically just stores and returns elements from a dict.
+#+name: get_course_info
+#+begin_src python
+def get_course_info(course_name):
+    course_list = {
+        # test courses
+        "comm1100" : {"course_id" : "course_85970000000122736", "start_date" : "2022-08-23", "end_date" : "2022-12-16"},
+
+        # spring 2023
+        "cse2431"  : {"course_id" : "course_85970000000136959", "start_date" : "2023-01-09", "end_date" : "2023-04-04"},
+        "comm2367" : {"course_id" : "course_85970000000133176", "start_date" : "2023-01-09", "end_date" : "2023-04-04"},
+        "ece2060"  : {"course_id" : "course_85970000000??????", "start_date" : "2023-01-09", "end_date" : "2023-04-04"},
+        "comm2540" : {"course_id" : "course_85970000000??????", "start_date" : "2023-01-09", "end_date" : "2023-04-04"},
+        "comm3554" : {"course_id" : "course_85970000000137226", "start_date" : "2023-01-09", "end_date" : "2023-04-04"}
+
+        # fall 2023
+    }
+
+    return course_list[course_name]
+#+end_src
+
+#+RESULTS: get_course_info
+*** Orgify the description text
+#+name: orgify_description
+#+begin_src python
+def orgify_description(description):
+    new_description = description
+
+    replacement_map = {
+        # Bold
+        "<strong>" : "*",
+        "</strong>" : "*",
+
+        # Italics
+        "<em>" : "/",
+        "</em>" : "/",
+
+        # Headers
+        "<h1>" : "",
+        "<h2>" : "",
+        "<h3>" : "",
+        "<h4>" : "",
+        "<h5>" : "",
+        "<h6>" : "",
+
+        # Misc / Stuff I want to ignore
+        "&nbsp;" : " ",
+        "&amp;"  : "&",
+        "<span>" : "",
+        "<p>" : "",
+        "</span>" : "",
+        "</p>" : "",
+        "\n" : ""
+        # Probably need a regex for div tags if those are still an issue
+
+
+        }
+    for pair in replacement_map:
+        #print(pair + ", " + replacement_map[pair])
+        new_description = new_description.replace(pair, replacement_map[pair])
+
+    return new_description[:50]
+
+#+end_src
+
+*** Orgify timestamp
+Given a timestamp in ISO 8601 format, convert it to a valid org timestamp
+
+#+name: orgify_timestamp
+#+begin_src python
+def orgify_timestamp(timestamp):
+
+    # Timezones
+    from_zone = tz.gettz("UTC")
+    to_zone = tz.gettz("EST")
+
+    # Localize the incoming timestamp
+    time = parser.parse(timestamp)
+    utc = time.replace(tzinfo=from_zone)
+    est = utc.astimezone(to_zone)
+
+    # Generate an org-compatable string
+    org_timestamp = est.strftime("<%Y-%m-%d %a %H:%M>")
+
+    return org_timestamp
+#+end_src
+
+*** Orgify status
+Converts ~True~ and ~False~ into ✅ and ❌ respectively
+#+name: orgify_status
+#+begin_src python
+def orgify_status(status):
+    if status:
+        return "✅"
+    else:
+        return "❌"
+#+end_src
+*** Orgify title
+Since the canvas api gives me a handy link to the assignment as a part of the calendar event, I want to use that in my table
+
+#+name: orgify_title
+#+begin_src python
+def orgify_title(assignment):
+    # Org mode is intercepting this but the below string is [ [%s] [%s]]
+    url = assignment["html_url"].replace("canvas", "osu") # Use the osu authenticator isntead of canvas's
+    return "[[%s][%s]]" % (url, assignment["title"])
+#+end_src
+*** Elisp wrapper to make the table pretty
+This is probably the most bodged together way to make this happen, but I want the tables to automatically prettyify themselves.
+
+*** Print as an org-table
+Given a course name, print the next x assignments in an org-table
+
+#+name: upcomming_assignments
+#+begin_src python :tangle course_calendar :noweb yes :results output table drawer replace :var x=10 :var name="comm2367"
+<<python_rest_imports>>
+<<fetch_course_calendar>>
+<<get_course_info>>
+<<get_next_assignments>>
+<<orgify_description>>
+<<orgify_timestamp>>
+<<orgify_status>>
+<<orgify_title>>
+def generate_upcomming_assignments_table(course_name, num):
+    assignment_list = get_next_assignments(course_name, num)
+    print("| Assignment Name | Status | Due Date |")
+    print("|-----------------+--------+----------|")
+    #print(assignment_list)
+
+    #if (len(assignment_list) < 1):
+    #    print("| %s | | | |" % "All done! Congrats!!!")
+    #    return
+
+    for i, j in enumerate(assignment_list):
+        assignment = assignment_list[i]
+        print("| %s |"  % orgify_title(assignment),end="")
+        print(" %s |"   % orgify_status(assignment["assignment"]["user_submitted"]),end="")
+        print(" %s |"   % orgify_timestamp(assignment["start_at"]),end="\n")
+        #print(" %s |"   % orgify_description(assignment["description"]),end="\n")
+
+if __name__ == "__main__":
+    generate_upcomming_assignments_table(name, x)
+
+#+end_src
+
+#+RESULTS: upcomming_assignments
+:results:
+2023-01-08 20:56:51.154298
+| Assignment Name                                         | Status | Due Date               | Description                                        |
+|---------------------------------------------------------+--------+------------------------+----------------------------------------------------|
+| [[https://canvas.instructure.com/courses/85970000000133176/assignments/8597~3216171][Quiz #1: Covers the Syllabus]]                            | ❌     | <2023-01-17 Tue 23:59> | For each of the following, please choose the best  |
+| [[https://canvas.instructure.com/courses/85970000000133176/assignments/8597~3216168][Quiz #2: Covers Chapters 1, 10, 11, and 12]]              | ❌     | <2023-01-20 Fri 23:59> | For each of the following, please choose the best  |
+| [[https://canvas.instructure.com/courses/85970000000133176/assignments/8597~3216163][Quiz #3: Covers Chapters 2A and 3]]                       | ❌     | <2023-01-27 Fri 23:59> | For each of the following, please choose the best  |
+| [[https://canvas.instructure.com/courses/85970000000133176/assignments/8597~3216202][Topic Ideas]]                                             | ❌     | <2023-01-27 Fri 23:59> | Please submit your tentative topic idea by Friday, |
+| [[https://canvas.instructure.com/courses/85970000000133176/assignments/8597~3216170][Quiz #4: Covers Chapters 4 and 5]]                        | ❌     | <2023-02-03 Fri 23:59> | For each of the following, please choose the best  |
+| [[https://canvas.instructure.com/courses/85970000000133176/assignments/8597~3216177][Annotated Bibliography Paper]]                            | ❌     | <2023-02-03 Fri 23:59> | <a class="instructure_file_link instructure_scribd |
+| [[https://canvas.instructure.com/courses/85970000000133176/assignments/8597~3216175][Media and Persuasion Speech #1]]                          | ❌     | <2023-02-07 Tue 23:59> | We will be sharing real-world examples of the diff |
+| [[https://canvas.instructure.com/courses/85970000000133176/assignments/8597~3216162][Quiz #5 (Covers Chapter 6) ]]                             | ❌     | <2023-02-17 Fri 23:59> | For each of the following, please choose the best  |
+| [[https://canvas.instructure.com/courses/85970000000133176/assignments/8597~3216196][Problem Analysis Paper DRAFT for Peer Review Assignment]] | ❌     | <2023-02-17 Fri 23:59> | Please submit a DRAFT of your Problem Analysis Pap |
+| [[https://canvas.instructure.com/courses/85970000000133176/assignments/8597~3216161][Quiz #6: Covers Chapters 2B and 7]]                       | ❌     | <2023-02-24 Fri 23:59> | For each of the following, please choose the best  |
+:end:
+
+** Current Module
+All of these methods are designed to work with the /v1/courses/:courseid:/modules endpoint.
+*** Fetch Course Module
+Get the list of courses from the ~/v1/courses/:courseid:/modules~ endpoint.
+#+name: fetch_course_modules
+#+begin_src python
+def fetch_course_modules(token, course_id):
+
+    request_url = "https://osu.instructure.com/api/v1/courses/" + course_id + "/modules"
+
+    header = {'Authorization' : token}
+
+    response = requests.get(request_url, headers=header)
+
+    return response.json()
+#+end_src
+
+*** Get Current Module
+#+name: get_current_module
+#+begin_src python
+def get_current_module(course_id):
+    oauth_token = "Bearer 8597~cRLhMLO1IkVu3rJBRMjE86sqAH55CEhxRtnTGiJLFGFhwZ07IQujCqWUXEbHFg1I"
+
+
+    response = fetch_course_modules(oauth_token, course_id)
+
+    current_module = max(response, key=lambda x: x["position"])
+
+    return current_module
+
+#+end_src
+
+#+RESULTS: get_current_module
+
+*** Link to module
+Given a course name, create and org link to the current module
+#+name: link_to_module
+#+begin_src python :tangle course_module :noweb yes :results output raw :var name="comm3554"
+<<python_rest_imports>>
+<<get_course_info>>
+<<fetch_course_modules>>
+<<get_current_module>>
+def link_to_current_module(course_name):
+    course_info = get_course_info(course_name)
+    course_id = course_info["course_id"][-6:] # Only need the last 6 characters for a module
+
+    current_module = get_current_module(course_id)
+
+    print("[[%s][%s]]" % ( "https://osu.instructure.com/courses/" + str(course_id) + "/modules#" + str(current_module["id"]), current_module["name"]))
+if __name__ == "__main__":
+    link_to_current_module(name)
+#+end_src
+
+#+RESULTS: link_to_module
+[[https://osu.instructure.com/courses/122736/modules#1110684][Week 9]]

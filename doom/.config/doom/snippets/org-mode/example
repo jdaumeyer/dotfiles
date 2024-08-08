@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: Hidden Answer
+# key: haa
+# condition: t
+# --
+@@html:<details>@@
+@@html:    <summary> Show Answer </summary><div class="answer">@@
+    $0
+    No solution yet, send one to [[mailto:daumeyer.11@osu.edu][daumeyer.11@osu.edu]]
+@@html:</div></details>@@

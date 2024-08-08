@@ -1,0 +1,84 @@
+#+TITLE: Dnd
+* DiceCloud
+
+** Parse Character
+Dicecloud's api is not documented except for a few github issues. There are two endpoints ~/character/~ and ~/vmix-character/~. We're using ~/vmix-character/~ here because it returns all the calculated totals of stats. The normal ~/charcter/~ endpoint returns ui elements for some reason.
+
+#+name: dicecloud-loadCharacter
+#+begin_src python :exports none
+def loadCharacter(characterId):
+    preprocessing = requests.get("https://dicecloud.com/vmix-character/" + characterId + "?key=cXdjEyZNJ9X7pKjQrgBhG3Lo3kYnYt", timeout=10)
+
+    character = json.loads(preprocessing.text)
+    return character.pop(0)
+#+end_src
+
+#+RESULTS: dicecloud-loadCharacter
+: None
+
+#+RESULTS: loadCharacter
+: None
+
+** Get and Output all Relevant Stats
+This is the method that'll print out everything that I want too see at a glance. Right not this is just *Passive Perception* and *Armour Class*.
+
+#+name: dicecloud-printQuickStats
+#+begin_src python :exports none
+def printQuickStats(character):
+    print("+ Passive Perception: *" + str(character['passivePerception']) + "*")
+    print("+ Armor Class: *" + str(character['AC']) + "*")
+
+#+end_src
+
+#+RESULTS: printQuickStats
+: None
+
+** Call Block
+I need to call this within org-mode, so this simply stores the characterIds that I need and lets me use them as variables.
+
+#+name: quickstats
+#+header: :var char="ogna"
+#+begin_src python :results output raw :noweb yes
+import requests, json
+
+<<dicecloud-loadCharacter>>
+
+<<dicecloud-printQuickStats>>
+
+characters = {
+    "fjord"    : "Sq4vc6TBPDqdQhRzc",
+    "ogna"     : "Sy9y7KFhq9wJkwDkp",
+    "mordecai" : "cSBuhJTrkhuS8Reg4",
+    "siohban"   : "StMeisyNXBbd42Gch",
+    "jhoto"    : "J29erzW2NuDu6obPM",
+
+}
+
+printQuickStats(loadCharacter(characters[char]))
+#+end_src
+
+
+#+call: quickstats("mordecai")
+
+#+RESULTS:
++ Passive Perception: *11*
++ Armor Class: *14*
+
+
+* Icewind Dale
+** Locale
+These methods generate information about the given day in Icewind Dale. They write to a file to store this information and increment on it after every execution.
+
+*** Weather
+Simple script to calculate the weather based on a marching hex picture.
+#+name: icewind-weather
+#+begin_src python
+
+#+end_src
+
+*** Day
+Prints out the day, month and year. Increments the day after each execution.
+#+name: icewind-day
+#+begin_src python
+
+#+end_src

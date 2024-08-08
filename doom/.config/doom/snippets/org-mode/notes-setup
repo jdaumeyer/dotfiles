@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: notes setupfile autofill
+# key: notes.setup
+# condition: t
+# --
+#+setupfile: ~/.doom.d/setupfiles/notes.setup
