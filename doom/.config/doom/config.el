@@ -19,9 +19,9 @@
 ;;
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
-(setq doom-font (font-spec :family "Fantasque Sans Mono" :size 12)
-      doom-variable-pitch-font (font-spec :family "Karla" :size 14)
-      doom-serif-font (font-spec :family "Roboto Slab"))
+;; (setq doom-font (font-spec :family "Fantasque Sans Mono" :size 12)
+;;       doom-variable-pitch-font (font-spec :family "Karla" :size 14)
+;;       doom-serif-font (font-spec :family "Roboto Slab"))
 
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
@@ -60,6 +60,9 @@
         :nv "k" #'evil-previous-visual-line
         :nv "j" #'evil-next-visual-line
         )
+
+(add-to-list 'default-frame-alist '(height . 36))
+(add-to-list 'default-frame-alist '(width . 80))
 
 (map! :after pdf-view-mode
       :map pdf-view-mode
@@ -530,6 +533,21 @@ This function makes sure that dates are aligned for easy reading."
 (setq +latex-viewers '(pdf-tools))
 
 ;;(add-to-list 'org-babel-load-languages '(quandary . t))
+
+(define-derived-mode astro-mode web-mode "astro")
+(setq auto-mode-alist
+      (append '((".*\\.astro\\'" . astro-mode))
+              auto-mode-alist))
+
+(use-package! eglot
+  :ensure t
+  :config
+  (add-to-list 'eglot-server-programs
+               '(astro-mode . ("astro-ls" "--stdio"
+                               :initializationOptions
+                               (:typescript (:tsdk "./node_modules/typescript/lib")))))
+  :init
+  (add-hook 'astro-mode-hook 'eglot-ensure))
 
 (setq window-divider-default-bottom-width 2  ; default is 1
       window-divider-default-right-width  2)  ; default is 1

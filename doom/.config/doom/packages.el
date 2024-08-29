@@ -54,3 +54,4 @@
 (package! request)
 (package! alert)
 (package! org-gcal)
+(package! eglot)
