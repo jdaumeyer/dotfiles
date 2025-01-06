@@ -106,7 +106,6 @@
        ;;upload            ; map local to remote projects via ssh/ftp
 
        :lang
-       (gdscript +lsp)
        ;;agda              ; types of types of types of types...
        ;;assembly          ; assembly for fun or debugging
        (cc)               ; C/C++/Obj-C madness
@@ -124,6 +123,7 @@
        ;;faust             ; dsp, but you get to keep your soul
        ;;fsharp           ; ML stands for Microsoft's Language
        ;;fstar             ; (dependent) types and (monadic) effects and Z3
+       (gdscript +lsp)
        ;;go                ; the hipster dialect
        ;;(haskell +dante)  ; a language that's lazier than I am
        ;;hy                ; readability of scheme w/ speed of python
@@ -171,6 +171,7 @@
        ;;swift             ; who asked for emoji variables?
        ;;terra             ; Earth and Moon in alignment for performance.
        web               ; the tubes
+       yaml
 
        :email
        ;;(mu4e +gmail)

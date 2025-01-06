@@ -54,3 +54,6 @@
 (package! astro-ts-mode)
 (package! catppuccin-theme)
 (package! yuck-mode)
+(package! request)
+(package! alert)
+(package! eglot)
