@@ -1,0 +1,17 @@
+#!/bin/bash
+## Run eww daemon if not running already
+
+EWW=`which eww`
+CONFIG="$HOME/.config/eww/"
+
+${EWW} kill
+
+if [[ ! `pidof eww` ]]; then
+	${EWW} daemon 2>&1 > eww-log.txt
+	echo "deamon started" >> eww-log.txt
+	sleep 1
+fi
+
+
+${EWW} open example 2>&1 >> eww-log.txt
+

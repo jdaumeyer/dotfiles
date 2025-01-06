@@ -51,6 +51,6 @@
 ;(package! builtin-package :recipe (:branch "develop"))
 
 ;; Google Calendar Integration
-(package! request)
-(package! alert)
-(package! org-gcal)
+(package! astro-ts-mode)
+(package! catppuccin-theme)
+(package! yuck-mode)

@@ -1,0 +1,10 @@
+(defpoll time :interval "1s" `date +%H:%M`)
+(defwidget clock []
+    (box
+        :orientation "horizontal"
+        :class "chip pink"
+        :halign "center"
+        :height 20
+        time
+    )
+)

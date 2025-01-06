@@ -1,0 +1,9 @@
+(defpoll numberofpackages :initial 0 :interval "5m" `pamac checkupdates -a | wc -l`)
+(defwidget pamac-updates []
+    (eventbox :class "orange chip pamac-updates"
+              :visible {numberofpackages > 1}
+              :onclick "pamac-manager --updates"
+              :timeout "40000ms"
+         {numberofpackages}
+         )
+)

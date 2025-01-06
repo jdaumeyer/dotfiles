@@ -1,0 +1,49 @@
+(include `widgets/hypr-workspaces.yuck`)
+(include `widgets/clock.yuck`)
+(include `widgets/battery.yuck`)
+(include `widgets/pamac-updates.yuck`)
+
+(defwidget left []
+    (box :halign "start"
+         :class "left"
+    (hypr-workspaces))
+)
+
+(defwidget center []
+    (box :halign "center"
+         :class "center"
+    (clock))
+
+)
+
+(defwidget right []
+    (box :halign "end"
+         :class "right"
+         :space-evenly true
+         :spacing 10
+    (pamac-updates)
+    (battery))
+)
+
+(defwindow topbar
+           :monitor 0
+           :geometry (geometry :width "100%"
+                               :height "20px"
+                               :x "0px"
+                               :y "0px"
+                               :anchor "top center")
+           :stacking "bg"
+           :exclusive true
+
+      (bar))
+
+(defwidget bar []
+(box
+    (label :text "work ${workspaces[activeworkspace - 1].windows == 1 ? "opaque" : "huh"}" :visible false)
+        (centerbox :orientation "horizontal"
+                   :class "bar ${workspaces[activeworkspace - 1].windows == 1 ? "opaque" : "huh"}"
+                (left)
+                (center)
+                (right)
+        )
+))

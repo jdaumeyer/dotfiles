@@ -1,0 +1,9 @@
+(defwidget battery []
+    (box
+        :orientation "horizontal"
+        :class "chip blue"
+        :halign "end"
+        :height 20
+        "${EWW_BATTERY["BAT0"]["capacity"]}%"
+    )
+)

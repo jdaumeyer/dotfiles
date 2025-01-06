@@ -19,7 +19,7 @@
 ;;
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
-(setq doom-font (font-spec :family "Fantasque Sans Mono" :size 12)
+(setq doom-font (font-spec :family "Fantasque Sans Mono" :size 14)
       doom-variable-pitch-font (font-spec :family "Karla" :size 14)
       doom-serif-font (font-spec :family "Roboto Slab"))
 
@@ -28,7 +28,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'apollo)
+(setq doom-theme 'catppuccin)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -528,8 +528,29 @@ This function makes sure that dates are aligned for easy reading."
 ;;                )
 
 (setq +latex-viewers '(pdf-tools))
+(setq org-latex-listings 'minted
+      org-latex-packages-alist '(("" "minted"))
+      org-latex-pdf-process
+      '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
 ;;(add-to-list 'org-babel-load-languages '(quandary . t))
+
+(use-package! astro-ts-mode
+  :after treesit-auto
+  :init
+  (when (modulep! +lsp)
+  (add-hook 'astro-ts-mode-hook #'lsp! 'append))
+  :config
+  (global-treesit-auto-mode)
+  (let ((astro-recipe (make-treesit-auto-recipe
+                       :lang 'astro
+                       :ts-mode 'astro-ts-mode
+                       :url "https://github.com/virchau13/tree-sitter-astro"
+                       :revision "master"
+                       :source-dir "src")))
+    (add-to-list 'treesit-auto-recipe-list astro-recipe)))
 
 (setq window-divider-default-bottom-width 2  ; default is 1
       window-divider-default-right-width  2)  ; default is 1
