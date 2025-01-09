@@ -3,4 +3,4 @@
 # key: notes.setup
 # condition: t
 # --
-#+setupfile: ~/.doom.d/setupfiles/notes.setup
+#+setupfile: ~/.config/doom/setupfiles/notes.setup
