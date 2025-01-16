@@ -1,5 +1,6 @@
 
-$padding: 2px 8px;
+$bar-padding: 10px;
+$chip-padding: 2px;
 $border-radius: 15px;
 $text-color: #11111b;
 $base: #1e1e2e;
@@ -8,46 +9,9 @@ $orange: linear-gradient(120deg, #fab387, #f38ba8);
 $blue: linear-gradient(120deg, #89b4fa, #89dceb);
 $green: linear-gradient(120deg, #94e2d5, #a6e3a1);
 
-.topbar {
-    // background: linear-gradient(120deg, #f5c2e7, #cba6f7);
-    background: transparent;
-    font-size: 14px;
-    font-weight: 800;
-    color: $text-color;
-    padding: 0;
-    // background-color: #1e1e2e;
-}
-
-.bar {
-    padding: 5px;
-    transition: background-color 200ms;
-}
-
-.work {
-
-    transition: background-color 200ms;
-}
-
-.opaque {
-    background-color: $base;
-    margin: -5px;
-    padding: 10px;
-    transition: background-color 140ms;
-}
-
-.greeter {
-    background: $orange;
-    border-radius: $border-radius;
-    padding: $padding;
-}
-
 .chip {
     border-radius: $border-radius;
-    padding: $padding;
-}
-
-.workspaces {
-    padding: 1px 0px;
+    padding: calc($chip-padding) $calc(chip-padding * 4);
 }
 
 .orange {
@@ -66,10 +30,48 @@ $green: linear-gradient(120deg, #94e2d5, #a6e3a1);
     background: $pink;
 }
 
+/* == Bar Style  == */
+
+.topbar {
+    // background: linear-gradient(120deg, #f5c2e7, #cba6f7);
+    background: transparent;
+    font-size: 14px;
+    font-weight: 800;
+    color: $text-color;
+    // padding: 2px;
+    // background-color: #1e1e2e;
+}
+
+.bar {
+    padding: $bar-padding;
+    transition: background-color 200ms;
+}
+
+.opaque {
+    background-color: $base;
+    margin: calc(-1 * ($bar-padding / 2));
+    padding: calc($bar-padding * 1.5);
+    transition: background-color 140ms;
+}
+
+
+
+/* == Workspaces == */
+
 .current {
-background: $text-color;
-// color: rgba(0,0,0,0);
-color: white;
-border-radius: 25px;
-transition: 200ms;
+    // background: $base;
+    // color: rgba(0,0,0,0);
+    // color: white;
+    border-radius: 10px;
+    transition: 200ms;
+    border: 1px solid $base;
+}
+
+.work {
+    transition: background-color 200ms;
+    border: 2px solid transparent;
+}
+
+.workspaces {
+    padding: 0px 0px;
 }
