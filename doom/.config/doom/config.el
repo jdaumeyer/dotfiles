@@ -61,10 +61,16 @@
         :nv "j" #'evil-next-visual-line
         )
 
-(map! :after pdf-view-mode
-      :map pdf-view-mode
-      :nv "J" #'pdf-view-next-page
-      :nv "K" #'pdf-view-previous-page)
+(map! :after pdf-tools
+      :map pdf-view-mode-map
+       "J" #'pdf-view-next-page
+      "K" #'pdf-view-previous-page
+      "j" #'pdf-view-next-line-or-next-page
+      "k" #'pdf-view-previous-line-or-previous-page
+      "SPC" #'doom/leader ; I hate having the leader stolen
+)
+
+(setq +zen-text-scale 0)
 
 (setq projectile-project-search-path '("~/doc/projects/" "~/doc/org/")
       projectile-globally-ignored-file-suffixes '(".pdf" ".odt" ".class" ".vs" ".s" ".o"))
@@ -457,6 +463,9 @@
 
 (add-hook! org-mode :append
            #'variable-pitch-mode)
+
+(add-hook! org-mode :append
+           #'visual-fill-column-mode)
 
 (setq org-agenda-block-separator (string-to-char " "))
 (setq org-agenda-format-date 'my-org-agenda-format-date-aligned)
