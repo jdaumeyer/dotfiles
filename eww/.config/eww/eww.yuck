@@ -4,6 +4,9 @@
 (include `widgets/pamac-updates.yuck`)
 (include `widgets/rofi-launcher/rofi-launcher.yuck`)
 
+
+(deflisten shouldbarbefilled :initial "[false,false,false]" `bash ~/.config/eww/scripts/hypr-get-if-window-is-full-width`)
+
 (defwidget left []
     (box :halign "start"
          :class "left"
@@ -43,9 +46,9 @@
 
 (defwidget bar []
 (box
-    (label :text "work ${workspaces[activeworkspace - 1].windows == 1 ? "opaque" : "huh"}" :visible false)
+    (label :text "${shouldbarbefilled}" :visible false)
         (centerbox :orientation "horizontal"
-                   :class "bar ${workspaces[activeworkspace - 1].windows == 1 ? "opaque" : "huh"}"
+                   :class "bar ${shouldbarbefilled[activeworkspace - 1]? "opaque" : "huh"}"
                 (left)
                 (center)
                 (right)

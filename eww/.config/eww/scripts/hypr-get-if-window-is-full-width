@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+full-width(){
+    hyprctl clients -j | jq -c "[group_by(.workspace.id) | .[] | any(.size.[0] == 1920)]"
+}
+
+full-width
+socat -u UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock - | while read -r line; do
+  full-width
+done
