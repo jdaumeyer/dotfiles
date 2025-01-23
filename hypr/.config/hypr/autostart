@@ -2,7 +2,7 @@
 ## Run eww daemon if not running already
 
 EWW=`which eww`
-CONFIG="$HOME/.config/eww/"
+# CONFIG="$HOME/.config/eww/"
 
 ${EWW} kill
 
@@ -13,5 +13,4 @@ if [[ ! `pidof eww` ]]; then
 fi
 
 
-${EWW} open example 2>&1 >> eww-log.txt
-
+${EWW} open topbar 2>&1 >> eww-log.txt

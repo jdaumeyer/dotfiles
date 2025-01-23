@@ -1,9 +1,11 @@
+;; Bar widget for listing out of date pacman packages
+;; By Jackie
 (defpoll numberofpackages :initial 0 :interval "5m" `pamac checkupdates -a | wc -l`)
 (defwidget pamac-updates []
     (eventbox :class "orange chip pamac-updates"
               :visible {numberofpackages > 1}
-              :onclick "pamac-manager --updates"
+              :onclick "pamac-manager --updates &"
+              :cursor "pointer"
               :timeout "40000ms"
-         {numberofpackages}
-         )
+         {numberofpackages})
 )
