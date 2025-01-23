@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   height="24px"
+   viewBox="0 -960 960 960"
+   width="24px"
+   fill="#5f6368"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="battery_040.svg"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="17.208333"
+     inkscape:cx="12"
+     inkscape:cy="11.970944"
+     inkscape:window-width="946"
+     inkscape:window-height="1024"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1" />
+  <path
+     d="M320-80q-17 0-28.5-11.5T280-120v-640q0-17 11.5-28.5T320-800h80v-80h160v80h80q17 0 28.5 11.5T680-760v640q0 17-11.5 28.5T640-80H320Zm40-320h240v-320H360v320Z"
+     id="path1" />
+  <path
+     style="fill:#11111b;fill-opacity:0.917647;stroke-width:0.16802;stroke-linecap:round;stroke-linejoin:round"
+     d="M 7.7566534,21.971136 C 7.4973008,21.907577 7.2826591,21.748469 7.1341953,21.509726 L 7.0024213,21.297821 6.9848665,13.27845 C 6.9752114,8.8677966 6.9834657,5.1231114 7.0032094,4.9569276 7.0422726,4.6281317 7.200315,4.3506079 7.4568638,4.1603069 7.6084509,4.0478636 7.7098406,4.0374013 8.8079534,4.0208897 l 1.187204,-0.017851 V 2.9894127 1.9757869 H 12 14.004843 v 1.0136258 1.0136259 l 1.187203,0.017851 c 1.098113,0.016512 1.199503,0.026974 1.35109,0.1394172 0.256597,0.1903362 0.414604,0.467859 0.453556,0.7966207 0.01969,0.1661838 0.02794,3.910869 0.01834,8.3215225 l -0.01746,8.019371 -0.13368,0.214988 c -0.07352,0.118244 -0.230425,0.275145 -0.348669,0.348668 l -0.214988,0.13368 -4.184019,0.0095 c -2.3012109,0.0052 -4.2630171,-0.0099 -4.3595696,-0.03352 z M 14.992736,9.9951574 V 5.9854722 H 12 9.0072639 V 9.9951574 14.004843 H 12 14.992736 Z"
+     id="path2"
+     transform="matrix(40,0,0,40,0,-960)" />
+</svg>

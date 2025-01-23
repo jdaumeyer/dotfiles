@@ -1,0 +1,19 @@
+;; Bar widget that launches rofi
+;; By Jackie
+(defwidget rofi-launcher []
+    (eventbox
+        :onclick "rofi -show drun &"
+        :timeout "4000ms"
+        :cursor "pointer"
+        :orientation "horizontal"
+        :class "chip black rofi-launcher"
+        :halign "start"
+        :height 16
+        :width 25
+        (image
+         :path "/home/jed/.config/eww/widgets/rofi-launcher/rocket-launcher.svg"
+         :fill-svg "#ffffff"
+         :image-height 18
+         )
+    )
+)
