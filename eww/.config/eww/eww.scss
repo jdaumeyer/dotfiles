@@ -9,9 +9,13 @@ $orange: linear-gradient(120deg, #fab387, #f38ba8);
 $blue: linear-gradient(120deg, #89b4fa, #89dceb);
 $green: linear-gradient(120deg, #94e2d5, #a6e3a1);
 
+/* == General == */
+
 .chip {
     border-radius: $border-radius;
-    padding: calc($chip-padding) $calc(chip-padding * 4);
+
+    /* Padding */
+    padding: 2px 8px;
 }
 
 .orange {
@@ -28,6 +32,11 @@ $green: linear-gradient(120deg, #94e2d5, #a6e3a1);
 
 .pink {
     background: $pink;
+}
+
+.black {
+    background: $base;
+    color: white;
 }
 
 /* == Bar Style  == */
@@ -54,6 +63,9 @@ $green: linear-gradient(120deg, #94e2d5, #a6e3a1);
     transition: background-color 140ms;
 }
 
+.icon {
+    // fill: $text-color;
+}
 
 
 /* == Workspaces == */
@@ -74,4 +86,12 @@ $green: linear-gradient(120deg, #94e2d5, #a6e3a1);
 
 .workspaces {
     padding: 0px 0px;
+    margin: 0;
+}
+
+
+.rofi-launcher {
+    // border: 2px solid #313244;
+    background-color: #45475a;
+    // background-color: #11111b;
 }

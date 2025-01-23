@@ -1,9 +1,19 @@
+;; Battery Widget
+;; Icons from Material Symbols by google
+;; Widget by Jackie
 (defwidget battery []
     (box
         :orientation "horizontal"
         :class "chip blue"
         :halign "end"
         :height 20
-        "${EWW_BATTERY["BAT0"]["capacity"]}%"
+        ;; "${round(EWW_BATTERY["BAT0"]["capacity"] / 10 % 10, 0)}%"
+    "./battery-0${round(EWW_BATTERY["BAT0"]["capacity"] / 10 % 10, 0)}0.svg"
+        (image
+         ;; :path "battery-0${round(EWW_BATTERY["BAT0"]["capacity"] / 10 % 10, 0)}0.svg"
+         :path "battery/battery_020.svg"
+         :fill-svg "#000000"
+         ;; :class "icon"
+         )
     )
 )

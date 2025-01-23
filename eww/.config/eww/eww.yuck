@@ -1,12 +1,16 @@
 (include `widgets/hypr-workspaces.yuck`)
 (include `widgets/clock.yuck`)
-(include `widgets/battery.yuck`)
+(include `widgets/battery/battery.yuck`)
 (include `widgets/pamac-updates.yuck`)
+(include `widgets/rofi-launcher/rofi-launcher.yuck`)
 
 (defwidget left []
     (box :halign "start"
          :class "left"
-    (hypr-workspaces))
+         :space-evenly true
+         :spacing 10
+    (hypr-workspaces)
+    (rofi-launcher))
 )
 
 (defwidget center []
